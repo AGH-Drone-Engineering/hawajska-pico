@@ -199,7 +199,7 @@ void gyro_init(int dr, int bw, enum gyro_fs fs, bool low_odr, bool hp_en, enum g
 bool gyro_read(float *vel)
 {
     uint8_t buf[3 * 2];
-    int16_t gx, gy, gz;
+    int16_t gz;
     uint8_t status;
 
     read_reg(STATUS, &status, 1, false);
@@ -208,8 +208,6 @@ bool gyro_read(float *vel)
     
     read_reg(OUT_X_L, buf, sizeof buf, true);
 
-    gx = (int16_t) (buf[1] << 8 | buf[0]);
-    gy = (int16_t) (buf[3] << 8 | buf[2]);
     gz = (int16_t) (buf[5] << 8 | buf[4]);
 
     *vel = MDPS_SCALE_FOR_FS[g_chosen_fs] * (float) gz / 1000.f;

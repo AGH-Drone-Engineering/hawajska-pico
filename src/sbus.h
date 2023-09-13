@@ -16,6 +16,12 @@
 #define SBUS_OPT_FS  (0b1000)
 #define SBUS_OPT_FL  (0b0100)
 
+#define SBUS_CHAN_MIN (172)
+#define SBUS_CHAN_MAX (1811)
+
+#define SBUS_CHAN_TO_F32(x) ((float) (x - SBUS_CHAN_MIN) / (SBUS_CHAN_MAX - SBUS_CHAN_MIN))
+#define SBUS_CHAN_TO_U8(x) ((uint8_t) ((x - SBUS_CHAN_MIN) * 0xff / (SBUS_CHAN_MAX - SBUS_CHAN_MIN)))
+
 enum sbus_err
 {
     SBUS_OK = 0,

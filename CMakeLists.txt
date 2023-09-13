@@ -9,8 +9,9 @@ add_executable(main
     ${CMAKE_CURRENT_LIST_DIR}/src/main.c
     ${CMAKE_CURRENT_LIST_DIR}/src/gyro.c
     ${CMAKE_CURRENT_LIST_DIR}/src/sbus.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/motors.c
 )
-target_link_libraries(main pico_stdlib hardware_spi hardware_uart)
+target_link_libraries(main pico_stdlib hardware_spi hardware_uart hardware_pwm)
 pico_enable_stdio_usb(main 1)
 pico_enable_stdio_uart(main 0)
 pico_add_extra_outputs(main)
