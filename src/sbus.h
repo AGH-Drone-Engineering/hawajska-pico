@@ -19,8 +19,10 @@
 #define SBUS_CHAN_MIN (172)
 #define SBUS_CHAN_MAX (1811)
 
-#define SBUS_CHAN_TO_F32(x) ((float) (x - SBUS_CHAN_MIN) / (SBUS_CHAN_MAX - SBUS_CHAN_MIN))
-#define SBUS_CHAN_TO_U8(x) ((uint8_t) ((x - SBUS_CHAN_MIN) * 0xff / (SBUS_CHAN_MAX - SBUS_CHAN_MIN)))
+#define SBUS_CLAMP(x) ((x < SBUS_CHAN_MIN) ? SBUS_CHAN_MIN : ((x > SBUS_CHAN_MAX) ? SBUS_CHAN_MAX : x))
+
+#define SBUS_CHAN_TO_F32(x) ((float) (SBUS_CLAMP(x) - SBUS_CHAN_MIN) / (SBUS_CHAN_MAX - SBUS_CHAN_MIN))
+#define SBUS_CHAN_TO_U8(x) ((uint8_t) ((SBUS_CLAMP(x) - SBUS_CHAN_MIN) * 0xff / (SBUS_CHAN_MAX - SBUS_CHAN_MIN)))
 
 enum sbus_err
 {
