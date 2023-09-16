@@ -16,6 +16,7 @@ void motors_init(void)
     pwm_set_chan_level(SLICE, PWM_CHAN_A, 0);
     pwm_set_chan_level(SLICE, PWM_CHAN_B, 0);
     pwm_set_enabled(SLICE, true);
+    pwm_set_clkdiv(SLICE, 97.65625f);
 }
 
 void motors_set(uint8_t left, uint8_t right)
