@@ -13,3 +13,6 @@
 | `GP17` | `SPI_CS`   |
 | `GP18` | `SPI_SCK`  |
 | `GP19` | `SPI_MOSI` |
+|        |            |
+| `GP20` | `I2C_SDA`  |
+| `GP21` | `I2C_SCL`  |
