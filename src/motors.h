@@ -5,6 +5,6 @@
 
 void motors_init(void);
 
-void motors_set(uint8_t left, uint8_t right);
+void motors_set(float left, float right);
 
 #endif

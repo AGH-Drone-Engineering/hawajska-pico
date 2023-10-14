@@ -1,8 +1,11 @@
 #include "mpu6050.h"
 
 #include <stdio.h>
+#include <math.h>
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
+
+#define SENSOR_RADIUS_M (0.010f) // 10mm
 
 #define I2C_INST (i2c1) // (i2c0)
 #define I2C_HZ (400000)
@@ -219,5 +222,10 @@ bool mpu6050_read_acc(float *ax, float *ay, float *az)
 
 bool mpu6050_read_gyro(float *gz)
 {
-    
+    float ax, ay, az;
+    read_norm_accel(&ax, &ay, &az);
+
+    float a_planar = sqrtf(ax * ax + ay * ay);
+
+    *gz = sqrtf(a_planar * (1 / SENSOR_RADIUS_M));
 }

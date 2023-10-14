@@ -1,11 +1,14 @@
 #include <stdio.h>
 #include <math.h>
-#include "pico/stdlib.h"
+#include <pico/stdlib.h>
 #include <hardware/gpio.h>
+#include <hardware/watchdog.h>
 
-#include "gyro.h"
+#include "mpu6050.h"
 #include "sbus.h"
 #include "motors.h"
+
+#define DEBUG
 
 #define LED_PIN (PICO_DEFAULT_LED_PIN)
 
@@ -21,15 +24,26 @@
 
 int main()
 {
+    // watchdog_enable(100, 1);
+
     stdio_init_all();
+
+    if (watchdog_caused_reboot())
+    {
+        printf("Watchdog caused reboot\n");
+    }
+
     motors_init();
     sbus_init();
-    gyro_init(0b11, 0b11, GYRO_FS_2000DPS, false, false, GYRO_OUT_SEL_LPF1);
+    mpu6050_init(MPU6050_SCALE_2000DPS, MPU6050_RANGE_2G);
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
 
     struct sbus_packet packet;
 
+    float ax = 0.f;
+    float ay = 0.f;
+    float az = 0.f;
     float vel0 = 0.f;
     float vel1 = 0.f;
     float ang = 0.f;
@@ -39,7 +53,8 @@ int main()
     {
         sbus_read(&packet);
 
-        new_gyro = gyro_read(&vel1);
+        // new_gyro = gyro_read(&vel1);
+        new_gyro = false;
         if (new_gyro)
         {
             float vel_offset =
@@ -52,6 +67,8 @@ int main()
             vel0 = vel1;
         }
 
+        mpu6050_read_acc(&ax, &ay, &az);
+
         gpio_put(LED_PIN, -30.f < ang && ang < 30.f);
 
         float speed_base = SBUS_CHAN_TO_F32(packet.channels[CHAN_LV]);
@@ -63,9 +80,7 @@ int main()
         float right_offset = speed_offset * (-cosf(DEG2RAD(ang)) + 1.f) * 0.5f;
         float speed_right = speed_base * (1.f - right_offset);
 
-        uint8_t ml = (uint8_t) (speed_left * 255.f);
-        uint8_t mr = (uint8_t) (speed_right * 255.f);
-        motors_set(ml, mr);
+        motors_set(speed_left, speed_right);
 
         #ifdef DEBUG
         if (timestep % 10000 == 0)
@@ -80,7 +95,8 @@ int main()
                 (int) packet.frame_lost
             );
             printf("ang: %f\tvel: %f\n", ang, vel1);
-            printf("ml: %d\tmr: %d\n", ml, mr);
+            printf("ax: %f\tay: %f\taz: %f\n", ax, ay, az);
+            printf("ml: %f\tmr: %f\n", speed_left, speed_right);
             printf("\n");
         }
         #endif
